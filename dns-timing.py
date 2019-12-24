@@ -3,9 +3,16 @@ import sys
 
 def time_url(url):
     os.system('sudo systemd-resolve --flush-caches')
-    cmd = 'dig {} | grep time | tail -1'.format(url)
+    cmd = 'dig {} +time=10 +tries=1 | grep time | tail -1'.format(url)
     miss = os.popen(cmd).read().split()[3]
     hit = os.popen(cmd).read().split()[3]
+    try:
+        hit = int(hit)
+        miss = int(miss)
+        while hit > 20:
+            hit = int(os.popen(cmd).read().split()[3])
+    except:
+        return time_url(url)
     os.system('sudo systemd-resolve --flush-caches')
     return '{} {} {}\n'.format(url,hit,miss)
 
