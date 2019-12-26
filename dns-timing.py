@@ -21,7 +21,7 @@ def main(start,end,part):
     f = open('1M_webrank')
     lines = f.readlines()
     f.close()
-    i = 0
+    i = 1
     lines = [line.split()[1] for line in lines[start:end]]
     now = datetime.now()
     with open('{}.dns{}.trace'.format(now.strftime('%Y%h%d'),part), 'w') as f:
