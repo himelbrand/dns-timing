@@ -1,7 +1,10 @@
 import os
 import sys
+from datetime import datetime
 
 def time_url(url):
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     os.system('sudo systemd-resolve --flush-caches')
     cmd = 'dig {} +time=10 +tries=1 | grep time | tail -1'.format(url)
     miss = os.popen(cmd).read().split()[3]
@@ -9,23 +12,25 @@ def time_url(url):
     try:
         hit = int(hit)
         miss = int(miss)
-        while hit > 20:
-            hit = int(os.popen(cmd).read().split()[3])
     except:
         return time_url(url)
     os.system('sudo systemd-resolve --flush-caches')
-    return '{} {} {}\n'.format(url,hit,miss)
+    return '{} {} {} {}\n'.format(url,hit,miss,dt_string)
 
 def main(start,end,part):
     f = open('1M_webrank')
     lines = f.readlines()
     f.close()
+    i = 0
     lines = [line.split()[1] for line in lines[start:end]]
-    with open('dns{}.trace'.format(part), 'w') as f:
+    now = datetime.now()
+    with open('{}.dns{}.trace'.format(now.strftime('%Y%h%d'),part), 'w') as f:
         for url in lines:
             line = time_url(url)
             f.write(line)
-
+            i += 1
+            if i%100 == 0:
+                f.flush()
 if __name__ == '__main__':
     argc = len(sys.argv) - 1
     if argc != 1:
