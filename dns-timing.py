@@ -3,19 +3,18 @@ import sys
 from datetime import datetime
 
 def time_url(url):
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    os.system('sudo systemd-resolve --flush-caches')
-    cmd = 'dig {} +time=10 +tries=1 | grep time | tail -1'.format(url)
-    miss = os.popen(cmd).read().split()[3]
-    hit = os.popen(cmd).read().split()[3]
     try:
-        hit = int(hit)
-        miss = int(miss)
+        now = datetime.now()
+        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+        os.system('sudo systemd-resolve --flush-caches')
+        cmd = 'dig {} +time=10 +tries=1 | grep time | tail -1'.format(url)
+        miss = int(os.popen(cmd).read().split()[3])
+        hit = int(os.popen(cmd).read().split()[3])
+        os.system('sudo systemd-resolve --flush-caches')
+        return '{} {} {} {}\n'.format(url,hit,miss,dt_string)
     except:
         return time_url(url)
-    os.system('sudo systemd-resolve --flush-caches')
-    return '{} {} {} {}\n'.format(url,hit,miss,dt_string)
+    
 
 def main(start,end,part):
     f = open('1M_webrank')
