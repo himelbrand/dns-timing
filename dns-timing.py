@@ -3,20 +3,16 @@ import sys
 from datetime import datetime
 
 def time_url(url):
-    tries = 0
-    while tries < 2:
-        now = datetime.now()
-        dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        os.system('sudo systemd-resolve --flush-caches')
-        cmd = 'dig {} +time=10 | grep time | tail -1'.format(url)
-        try:
-            miss = int(os.popen(cmd).read().split()[3])
-            hit = int(os.popen(cmd).read().split()[3])
-            break
-        except:
-            tries += 1
-            miss = '-1'
-            hit = '-1'
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    os.system('sudo systemd-resolve --flush-caches')
+    cmd = 'dig {} +time=10 | grep time | tail -1'.format(url) #defaults to 3 tries
+    try:
+        miss = int(os.popen(cmd).read().split()[3])
+        hit = int(os.popen(cmd).read().split()[3])
+    except:
+        miss = -1
+        hit = -1
     return '{} {} {} {}\n'.format(url,hit,miss,dt_string)
     
 
