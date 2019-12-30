@@ -3,7 +3,8 @@ import sys
 from datetime import datetime
 
 def time_url(url):
-    while True:
+    tries = 0
+    while tries < 2:
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
         os.system('sudo systemd-resolve --flush-caches')
@@ -13,7 +14,9 @@ def time_url(url):
             hit = int(os.popen(cmd).read().split()[3])
             break
         except:
-            pass
+            tries += 1
+            miss = '-1'
+            hit = '-1'
     return '{} {} {} {}\n'.format(url,hit,miss,dt_string)
     
 
