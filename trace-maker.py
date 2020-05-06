@@ -23,12 +23,12 @@ while line:
         ranges.append(per_day)
     line = f.readline()
 f.close()
-trace_lengths = [int(1e6),int(2e6),int(5e6),int(1e7),int(2e7),int(5e7)]
+trace_lengths = [int(5e7),int(5e7),int(5e7),int(5e7)]
 ranges = list(np.array(ranges)/total_access)
 
 def main():
     times = dict()
-    with open('poc_dns7.times') as f:
+    with open('poc_dns18.times') as f:
         lines = f.readlines()
         for line in lines:
             url,hit,miss = line.split()

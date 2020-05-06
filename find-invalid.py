@@ -28,6 +28,8 @@ def print_invalid():
             lines = f.readlines()
             data_lines = [line.split() for line in lines]
             for dl in data_lines:
+                if len(dl) < 3:
+                    continue
                 url = dl[0]
                 hit = int(dl[1])
                 miss = int(dl[2])
@@ -59,6 +61,6 @@ def print_invalid():
     print('max-miss:%d'%max_miss)
     print('min-hit:%d'%min_hit)
     print('min-miss:%d'%min_miss)
-    create_poc(set(invalid.keys()))
+    # create_poc(set(invalid.keys()))
 if __name__ == '__main__':
     print_invalid()

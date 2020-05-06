@@ -20,6 +20,8 @@ with open(out_f,'w+') as out:
             lines = t.readlines()
             for line in lines:
                 line = line.split()
+                if len(line) < 3:
+                    continue
                 url = line[0]
                 hit = int(line[1])
                 miss = int(line[2])
