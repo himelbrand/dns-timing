@@ -1,7 +1,6 @@
 import os
 import time
 import numpy.random as random
-import multiprocessing as mp
 import numpy as np
 from bisect import bisect_left
 import re

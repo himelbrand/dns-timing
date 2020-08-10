@@ -55,7 +55,6 @@ def parse_args():
     return args
 
 if __name__ == "__main__":
-    print('parsing cmd args...')
     args = parse_args()
     print('aggregating times...')
     times = aggregate_times(args)
