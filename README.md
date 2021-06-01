@@ -4,7 +4,7 @@
 
 This repo contains a few scripts to collect DNS lookup-times, aggregate the times to average times, infer some statistics about the times collected and create DNS lookup workload traces.
 
-These scripts were used to create DNS workload traces with access times and gater statistics on the collected times, which was used for simulations in the "Boosting cache performance using access times". (add link)
+<!-- These scripts were used to create DNS workload traces with access times and gater statistics on the collected times, which was used for simulations in the "Boosting cache performance using access times". (add link) -->
 
 # Requirements
 
