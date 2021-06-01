@@ -119,7 +119,7 @@ optional arguments:
 
 All of the available data files for this repo can be found [here](https://drive.google.com/drive/folders/1znXAK1suZzmg0aJ3HzRMrykIAXRIyrBu?usp=sharing).
 
-**Times collected from BGU**
+**Times collected from Ben-Gurion University**
 * [December 31st 2019 - January 19th 2019](https://drive.google.com/drive/folders/1iPBfbX5WaUCeWmFdHEuM-xrmcM-CSYYB?usp=sharing)
 * [May 6th 2020 - June 5th 2020](https://drive.google.com/drive/folders/1i2CofHd_gwsH6it4dvjKsU7rSKr9DFJP?usp=sharing)
 
