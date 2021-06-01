@@ -69,8 +69,6 @@ optional arguments:
   -basedir BASEDIR  path to base directory containing collected times
                     (default: "data").
   -vm_num VM_NUM    a positive integer for the used number of vms.
-  -o OUTPUT_PATH    path for aggregated times output file (default:
-                    "mean_times.out")
   -i INPUT_PATH     path for aggregated times input file, if not given
                     aggregation is done from files in basedir.
   --logscale        flag to make histogram plot y-scale be in log-scale.
@@ -121,12 +119,6 @@ optional arguments:
 
 All of the available data files for this repo can be found [here](https://drive.google.com/drive/folders/1znXAK1suZzmg0aJ3HzRMrykIAXRIyrBu?usp=sharing).
 
-**Traces used in the paper**
-* [DNS1]()
-* [DNS2]()
-* [DNS3]()
-* [DNS4]()
-
 **Times collected from BGU**
 * [December 31st 2019 - January 19th 2019](https://drive.google.com/drive/folders/1iPBfbX5WaUCeWmFdHEuM-xrmcM-CSYYB?usp=sharing)
 * [May 6th 2020 - June 5th 2020](https://drive.google.com/drive/folders/1i2CofHd_gwsH6it4dvjKsU7rSKr9DFJP?usp=sharing)
@@ -137,6 +129,6 @@ All of the available data files for this repo can be found [here](https://drive.
 * [poc_dns11.times](https://drive.google.com/file/d/1WTpLfJE8maXHgZ9uI5XhdZ4giFNhyiiS/view?usp=sharing)
 * [mean_times.out](https://drive.google.com/file/d/1Hc5XogvvN_w7eZkWSILSVFk-Bun1ykTo/view?usp=sharing)
 
-# Further reading
+<!-- # Further reading
 * Boosting Cache Performance byAccess Time Awareness
-* mp-traces - Another traces maker repo used in this paper to create traces for latency aware cache policies simulations.
+* mp-traces - Another traces maker repo used in this paper to create traces for latency aware cache policies simulations. -->

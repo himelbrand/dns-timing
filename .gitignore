@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 /data
+
+flat-hits
+flat-misses

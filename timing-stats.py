@@ -27,42 +27,59 @@ def aggregate_times(args):
                 url = line[0]
                 hit = int(line[1])
                 miss = int(line[2])
+                if 'May' in f or 'Jun' in f:
+                    hit/=1000
+                    miss/=1000    
+                hit = hit if hit >=0 else 1000
+                miss = miss if miss >= 0 else 10000
                 if url not in times and hit >= 0:
-                    times[url] = {'miss':miss,'hit':hit}
+                    times[url] = {'miss':[miss],'hit':[hit]}
                 elif hit >= 0:
-                    times[url] = {'miss':(miss+times[url]['miss']),'hit':(hit+times[url]['hit'])}        
-    for url in times.keys():
-        times[url] = {
-            'hit':round(times[url]['hit']/(len(files)//args.vm_num),5) if times[url]['hit'] >= 0 else -1,
-            'miss':round(times[url]['miss']/(len(files)//args.vm_num),5) if times[url]['miss'] >= 0 else -1
-            }
-    if args.output:
-        print(f'Saving aggregated times to {args.output}...')
-        with open(args.output,'w+') as f:
-            for url in times:
-                f.write(f'{url} {times[url]["hit"]} {times[url]["miss"]}\n')
+                    times[url]['miss'].append(miss)
+                    times[url]['hit'].append(hit)  
+   
     return times
+
+
 def parse_args():
     parser = argparse.ArgumentParser(prog='timing-stats.py',description='Displays statistics about times collected')
     parser.add_argument('-basedir', default='data' ,help='path to base directory containing collected times (default: "data").')
     parser.add_argument('-vm_num',dest='vm_num', default=6, type=int, help='a positive integer for the used number of vms.')
-    parser.add_argument('-o',metavar='OUTPUT_PATH',dest='output', default='mean_times.out', help='path for aggregated times output file (default: "mean_times.out")')
     parser.add_argument('-i',metavar='INPUT_PATH',dest='input', default=None, help='path for aggregated times input file, if not given aggregation is done from files in basedir.')
-    parser.add_argument('--logscale',dest='log_scale',default=False,action='store_const',const=True,help='flag to make histogram plot y-scale be in log-scale.')
+    parser.add_argument('--logscale',dest='log_scale',default=True,action='store_const',const=True,help='flag to make histogram plot y-scale be in log-scale.')
     args = parser.parse_args()
     if args.vm_num <= 0:
         raise argparse.ArgumentTypeError(f'{args.vm_num} is an invalid positive integer.')
     return args
 
+
 if __name__ == "__main__":
     args = parse_args()
-    print('aggregating times...')
-    times = aggregate_times(args)
-    print('filtering times...')
-    valid = list(filter(lambda x:x[0]>=0 and x[1]>=0,[(times[url]['hit'],times[url]['miss']) for url in times]))
-    print('splitting times...')
-    hits = np.array([x[0] for x in valid])
-    misses = np.array([x[1] for x in valid])
+    flatten = lambda t: [item for sublist in t for item in sublist]
+    if os.path.exists('flat-hits') and os.path.exists('flat-misses'):
+        with open('flat-hits') as f:
+            print('Loading hits')
+            lines = f.readlines()
+            valid_h = [float(n) for n in lines]
+        with open('flat-misses') as f:
+            print('Loading misses')
+            lines = f.readlines()
+            valid_m = [float(n) for n in lines]
+    else:
+        print('aggregating times...')
+        times = aggregate_times(args)
+        print('filtering times...')
+        flat_hits = flatten([times[url]['hit'] for url in times])
+        flat_misses = flatten([times[url]['miss'] for url in times])
+        valid_h = list(filter(lambda x:x>=0,flat_hits))
+        valid_m = list(filter(lambda x:x>=0,flat_misses))
+        with open('flat-hits','w') as f:
+            f.write('\n'.join([str(n) for n in valid_h]))
+        with open('flat-misses','w') as f:
+            f.write('\n'.join([str(n) for n in valid_m]))
+    print('converting to numpy...')
+    hits = np.array(valid_h)
+    misses = np.array(valid_m)
     print('Some stats...')
     print(f'Max. value of misses: {misses.max()}')
     print(f'Max. value of hits: {hits.max()}')
@@ -73,16 +90,16 @@ if __name__ == "__main__":
     print(f'Std. of misses: {misses.std()}')
     print(f'Std. of hits: {hits.std()}')
 
-    print('Plotting Histogram...')
+    print('Plotting combined Histogram...')
+    plt.close()
     plt.figure(figsize=(7,5))
-    plt.ylabel(f'Frequency{" - log scale" if args.log_scale else ""}',fontsize=16)
-    plt.xlabel('Access Time (ms)',fontsize=16)
-    plt.xticks(fontsize=12,rotation=45)
-    plt.yticks(fontsize=12)
-
-    plt.hist(misses,label='Misses',color='#ffa50080',density=True,bins=75)
-    plt.hist(hits,label='Hits',color='#9D839F',density=True,bins=75)
-    plt.legend(fontsize='x-large')
+    plt.ylabel(f'Frequency{" - log scale" if args.log_scale else ""}',fontsize=20)
+    plt.xlabel('Access Time (ms)',fontsize=20)
+    plt.xticks(fontsize=15,rotation=45)
+    plt.yticks(fontsize=15)
+    plt.hist(misses,label='Misses',color='#ffa50080',density=True,bins=100)
+    plt.hist(hits,label='Hits',color='#9D839F',density=True,bins=100)
+    plt.legend(fontsize=18)
     if args.log_scale:
         plt.yscale('log')
     plt.tight_layout()

@@ -5,8 +5,8 @@ import numpy as np
 from bisect import bisect_left
 import re
 import argparse
-
-
+import pprint
+NO_REC = True
 urls = []
 p = []
 ranges = []
@@ -30,13 +30,38 @@ def main():
         count = len(list(filter(lambda x: re.search(filename,x),os.listdir()))) + 1
         suffix = '.trace'
         filename = filename + '_%d'%(count) + suffix
+        unique_keys = set()
+        requests_count = 0
         with open(filename,'w') as f:
             for _ in range(t_len):
                 idx = bisect_left(ranges,random.rand())
                 url = urls[idx]
-                hit,miss = times[url]['hit'],times[url]['miss']
-                f.write('%s %s %s\n'%(url,hit,miss))     
+                sub_queries = url.split('.')
+                queries = list(reversed(['.'.join(sub_queries[i:]) for i in range(len(sub_queries))]))
+                hit_len = len(times[url]['hit'])
+                miss_len = len(times[url]['miss'])    
+                if NO_REC:
+                    idx = int(random.rand()*hit_len)
+                    hit = times[url]['hit'][idx]
+                    idx = int(random.rand()*miss_len)
+                    miss = times[url]['miss'][idx]
+                    q = url
+                    m = miss
+                    unique_keys.add(q)
+                    requests_count += 1
+                else:          
+                    for q,p in zip(queries,[0.7,0.25,0.25,0.15]):
+                        idx = int(random.rand()*hit_len)
+                        hit = times[url]['hit'][idx]
+                        idx = int(random.rand()*miss_len)
+                        miss = times[url]['miss'][idx]
+                        m = miss*p
+                        unique_keys.add(q)
+                        requests_count += 1
+                f.write('%s %s %s\n'%(q,int(hit*1000),int(m*1000)))     
         print(f'Finished creating {filename}')  
+        print(f'Number of unique keys: {len(unique_keys)}')
+        print(f'Total number of requets: {requests_count}')
 
 def init_globals(fname,basedir,vm_num,replace,r_hit,r_miss):   
     global total_access,p,urls,ranges
@@ -68,22 +93,21 @@ def init_globals(fname,basedir,vm_num,replace,r_hit,r_miss):
                 url = line[0]
                 hit = int(line[1])
                 miss = int(line[2])
+                if 'May' in f or 'Jun' in f:
+                    hit/=1000
+                    miss/=1000
                 hit = hit if not replace or hit >=0 else r_hit
                 miss = miss if not replace or miss >= 0 else r_miss
                 if url not in times and hit >= 0:
-                    times[url] = {'miss':miss,'hit':hit}
+                    times[url] = {'miss':[miss],'hit':[hit]}
                 elif hit >= 0:
-                    times[url] = {'miss':(miss+times[url]['miss']),'hit':(hit+times[url]['hit'])}        
-    for url in times.keys():
-        times[url] = {
-            'hit':round(times[url]['hit']/(len(files)//vm_num),5) if times[url]['hit'] >= 0 else -1,
-            'miss':round(times[url]['miss']/(len(files)//vm_num),5) if times[url]['miss'] >= 0 else -1
-            }
+                    times[url]['miss'].append(miss)
+                    times[url]['hit'].append(hit)        
 
 def parse_args():
     parser = argparse.ArgumentParser(prog='trace-maker.py',description='Creates new random traces from input file')
     parser.add_argument('-input', dest='input', default='filtered_1M_webrank',help='path to input file containing urls to time (default: "filtered_1M_webrank").')
-    parser.add_argument('-length',dest='length', metavar='L',default=5e7, type=float, help='an integer for the number of requests in trace (default: 5e7).')
+    parser.add_argument('-length',dest='length', metavar='L',default=15e7, type=float, help='an integer for the number of requests in trace (default: 5e7).')
     parser.add_argument('-num',dest='num', metavar='N',default=1, type=int, help='an integer for the number of traces to create (default: 1).')
     parser.add_argument('-vm_num',dest='vm_num', default=6, type=int, help='a positive integer for the used number of vms.')
     parser.add_argument('-basedir', default='data' ,help='path to base directory containing collected times (default: "data").')

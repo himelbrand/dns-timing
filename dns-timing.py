@@ -8,10 +8,11 @@ def time_url(url):
     now = datetime.datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     os.system('sudo systemd-resolve --flush-caches')
-    cmd = 'dig {} +time=3 -u | grep time | tail -1'.format(url) 
+    cmd_miss = 'dig {} +time=3 -u | grep time | tail -1'.format(url) 
+    cmd_hit = 'dig {} +norecurse +time=3 -u | grep time | tail -1'.format(url) 
     try:
-        miss = int(os.popen(cmd).read().split()[3])
-        hit = int(os.popen(cmd).read().split()[3])
+        miss = int(os.popen(cmd_miss).read().split()[3])
+        hit = int(os.popen(cmd_hit).read().split()[3])
     except: #timed out 3 times
         miss = -1
         hit = -1
